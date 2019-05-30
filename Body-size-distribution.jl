@@ -83,8 +83,6 @@ function movimiento(X,S,t_vida,t_muerte, t_rep, Patches, Comida, time, L=20, r =
     while test
         i1 = argmin(t_2rep)
         i2 = argmin(t_2muertes)
-    #     @show Comida[X[i1][1]+1,X[i1][2]+1, X[i1][3]+1]> Patches[X[i1][1]+1,X[i1][2]+1, X[i1][3]+1]
-    #     @show t_2muertes[i2], t_reproduccion[i1]
         if t3<t_2muertes[i2] && t3<t_2rep[i1]
             t = t3
             Comida = reproduccion_comida(Patches,Comida,r,vpatche,vpatche)
@@ -133,7 +131,6 @@ end
 
 function dispersion(N, t_max, r = 1.2, L = 20, vpatche = 2., Maxsize = 2. )
     time = 0
-    @show "hola"
     X,S,t_vida,t_muerte,t_rep, Patches = condiciones_iniciales(N, L, Maxsize)
     n1,n2,n3 = size(Patches)
     Comida = 1*ones(n1,n2,n3)
@@ -143,15 +140,9 @@ function dispersion(N, t_max, r = 1.2, L = 20, vpatche = 2., Maxsize = 2. )
     contador2 = 0
     while time<t_max
         contador += 1
-        if mod(contador, 1000) == 1
-            histogram(S, nbins = 20, key = false, show = :ijulia, title = "t = $time, N = $(length(S))")
-        end
         X,S,t_vida,t_muerte,t_rep, Patches, Comida, time = movimiento(X,S,t_vida,t_muerte, t_rep, Patches, Comida, time, L, r, vpatche)    
         push!(T, time)
         push!(NN,length(S))
-        if mod(contador, 1000) == 500
-    #        plot(T,NN, key = false, show = :ijulia, xlabel = "time", ylabel = "N")
-        end
     end
     return X,S,t_vida,t_muerte,t_rep, Patches, Comida, NN, T
 end
@@ -163,9 +154,6 @@ function dispersion(X,S,t_vida,t_muerte,t_rep, Patches, Comida, t_max, NN, T, r 
     contador2 = 0
     while time<t_max
         contador += 1
-        if mod(contador, 1000) == 1
-            histogram(S, nbins = 30, key = false, show = :ijulia, title = "t = $time, N = $(length(S))")
-        end
         X,S,t_vida,t_muerte,t_rep, Patches, Comida, time = movimiento(X,S,t_vida,t_muerte, t_rep, Patches, Comida, time, L, r, vpatche)
         push!(T, time)
         push!(NN,length(S))
@@ -173,33 +161,6 @@ function dispersion(X,S,t_vida,t_muerte,t_rep, Patches, Comida, t_max, NN, T, r 
         if length(S)<10
             break
         end
-       # @show length(S), time
-        if mod(contador, 1000) == 500
- #           plot(T,NN, key = false, show = :ijulia, xlabel = "time", ylabel = "N")
-  #          plot(T,com, key = false, show = :ijulia, xlabel = "time", ylabel = "comida")
-        end
     end
     return X,S,t_vida,t_muerte,t_rep, Patches, Comida, NN, T
 end
-
-function promedio(T, N, dT)
-    Np = []
-    Tp = []
-    Tmax = maximum(T)
-    t = 0
-    NNp = 0
-    contador = 1 
-    while t< Tmax
-        t += dT
-        push!(Tp, t)
-        contador2 = contador
-        while T[contador]<t
-            NNp += N[contador]
-            contador += 1
-        end
-        dN = contador-contador2
-        push!(Np, NNp/dN)
-        NNp = 0
-    end
-    return Tp, Np
-end     
